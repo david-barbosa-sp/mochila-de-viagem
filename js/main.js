@@ -1,32 +1,35 @@
 const form = document.querySelector('.adicionar');
 const lista = document.getElementById('lista');
-const itens = [];
+const itens = JSON.parse(localStorage.getItem('itens')) || [];
+
+itens.forEach((elemento)=>{
+    criarElemento(elemento);
+})
 
 form.addEventListener('submit', (e)=>{
     e.preventDefault();
     const nome = e.target.elements['nome'];
     const quantidade = e.target.elements['quantidade'];
+
+    const itemAtual = {'nome': nome.value, 'quantidade': quantidade.value}
+    itens.push(itemAtual)
+    localStorage.setItem('itens', JSON.stringify(itens));
     
-    criarElemento(nome.value, quantidade.value);
+    criarElemento(itemAtual);
     nome.value = '';
     quantidade.value = '';
 }
 )
 
-function criarElemento(nome, quantidade){
+function criarElemento(item){
     
     const numeroItem = document.createElement('strong');
-    numeroItem.innerHTML = quantidade
+    numeroItem.innerHTML = item.quantidade
 
     const novoItem = document.createElement('li');
     novoItem.classList.add('item');
     novoItem.appendChild(numeroItem);
-    novoItem.innerHTML += nome;
+    novoItem.innerHTML += item.nome;
 
-    lista.appendChild(novoItem);
-
-    const itemAtual = {'nome': nome, 'quantidade': quantidade}
-    itens.push(itemAtual)
-    localStorage.setItem('item', JSON.stringify(itens));
-    
+    lista.appendChild(novoItem);    
 }
