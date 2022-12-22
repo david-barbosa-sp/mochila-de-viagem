@@ -1,7 +1,7 @@
 const form = document.querySelector('.adicionar');
 const lista = document.getElementById('lista');
 const itens = JSON.parse(localStorage.getItem('itens')) || [];
-[].l
+
 itens.forEach((elemento)=>{
     criarElemento(elemento);
 })
@@ -13,13 +13,14 @@ form.addEventListener('submit', (e)=>{
     const itemAtual = {'nome': nome.value, 'quantidade': quantidade.value}
 
     const existe = itens.find(elemento => elemento.nome === nome.value);
+    
     if(existe){
         itemAtual.id = existe.id;
         atualizaItem(itemAtual);
-        itens[existe.id] = itemAtual;
+        itens[itens.findIndex(elemento => elemento.id === existe.id)] = itemAtual;
     }
     else{
-        itemAtual.id = itens.length;
+        itemAtual.id = itens[itens.length -1] ? (itens[itens.length -1]).id + 1 : 0;
         criarElemento(itemAtual);
         itens.push(itemAtual)
     }
@@ -42,6 +43,7 @@ function criarElemento(item){
     novoItem.classList.add('item');
     novoItem.appendChild(numeroItem);
     novoItem.innerHTML += item.nome;
+    novoItem.appendChild(botaoDeleta(item.id));
 
     lista.appendChild(novoItem);    
 }
@@ -50,4 +52,22 @@ function atualizaItem(item){
     const id = `[data-id="${item.id}"]`;
     const itemAntigo = document.querySelector(id);
     itemAntigo.innerHTML = item.quantidade;
+}
+
+function botaoDeleta(id){
+    const elementoBotao = document.createElement("button");
+    elementoBotao.innerHTML = "X";
+    elementoBotao.addEventListener('click', (e)=>{
+        const itemLista = e.target.parentNode;
+        deletaElemento(itemLista, id);
+    })
+
+    return elementoBotao;
+}
+
+function deletaElemento(item, id){
+    item.remove();
+
+    itens.splice(itens.findIndex(elemento => elemento.id === id), 1);
+    localStorage.setItem('itens', JSON.stringify(itens));
 }
